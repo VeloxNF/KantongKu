@@ -1,0 +1,6 @@
+{
+  "name": "KantongKu",
+  "description": "Aplikasi manajemen uang pribadi dengan desain bento grid, target kantong pengeluaran & tabungan, catatan transaksi detail, akun offline, dan cadangan cloud.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

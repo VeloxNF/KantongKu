@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">KantongKu</string>
+    <string name="nav_home">Beranda</string>
+    <string name="nav_pockets">Kantong</string>
+    <string name="nav_record">Catat</string>
+    <string name="nav_history">Riwayat</string>
+    <string name="nav_account">Akun</string>
+    <string name="action_income">Pemasukan</string>
+    <string name="action_expense">Pengeluaran</string>
+    <string name="action_target">Target</string>
+    <string name="action_history">Riwayat</string>
+    <string name="sign_in_google">Masuk dengan Google</string>
+    <string name="biometric_prompt_title">Buka Kunci KantongKu</string>
+    <string name="biometric_prompt_subtitle">Verifikasi sidik jari atau wajah untuk mengakses data keuangan Anda</string>
+    <string name="biometric_prompt_negative">Keluar Akun</string>
+    <string name="biometric_verify_setting_title">Verifikasi Biometrik</string>
+    <string name="biometric_verify_setting_subtitle">Konfirmasi sidik jari atau wajah untuk mengubah pengaturan kunci aplikasi</string>
+    <string name="notification_channel_budget_name">Peringatan Target Kategori</string>
+    <string name="notification_channel_budget_desc">Memberi tahu saat pengeluaran kategori melebihi target bulanan</string>
+    <string name="action_scan_receipt">Scan Struk</string>
+    <string name="scan_receipt_subtitle">Kamera fisik &amp; galeri struk digital</string>
+</resources>

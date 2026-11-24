@@ -1,0 +1,121 @@
+{
+  "entities": {
+    "UserCloudProfile": {
+      "title": "UserCloudProfile",
+      "description": "Cloud backup of the user's personal finance profile, currency preference, and theme preferences.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID owning this profile." },
+        "displayName": { "type": "string", "description": "User display name editable in Account > Profile." },
+        "paydayDay": { "type": "integer", "description": "Day of month (1-31) for payday countdown." },
+        "monthlyBudget": { "type": "integer", "description": "Monthly spending budget in Rupiah." },
+        "themeScheme": { "type": "string", "enum": ["BENTO_NEON", "EMERALD_MINT", "OCEAN_COBALT", "SUNSET_ROSE"] },
+        "themeMode": { "type": "string", "enum": ["SYSTEM", "DARK", "LIGHT"] },
+        "currencyCode": { "type": "string", "description": "ISO 4217 currency code selected by user (e.g. IDR, USD, EUR)." },
+        "languageCode": { "type": "string", "enum": ["zh", "id", "en", "ja", "de", "ko", "ru"] },
+        "hideBalances": { "type": "boolean", "description": "Privacy toggle to mask balance amounts on dashboard and wallets." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "displayName", "paydayDay", "monthlyBudget", "themeScheme", "themeMode", "createdAt", "updatedAt"]
+    },
+    "CloudWallet": {
+      "title": "CloudWallet",
+      "description": "User-scoped multi-wallet account supporting Tunai, Indonesian E-Wallets, and Indonesian Banks.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID owning this wallet." },
+        "name": { "type": "string", "description": "User-visible wallet label." },
+        "type": { "type": "string", "enum": ["CASH", "EWALLET", "BANK"] },
+        "providerCode": { "type": "string", "description": "Indonesian bank or e-wallet catalog code." },
+        "providerShortName": { "type": "string", "description": "Short bank or e-wallet name (e.g. BRI, Bank Jago, GoPay)." },
+        "providerCompanyName": { "type": "string", "description": "Legal corporate entity name (e.g. PT. Bank Rakyat Indonesia)." },
+        "accountNumberHint": { "type": "string", "description": "Optional masked account number or phone hint." },
+        "balance": { "type": "integer", "description": "Wallet balance in base IDR." },
+        "colorSlot": { "type": "integer", "description": "Accent color slot index (0-5)." },
+        "isDefault": { "type": "boolean", "description": "Whether this wallet is the default selection for new transactions." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "name", "type", "providerCode", "providerShortName", "providerCompanyName", "accountNumberHint", "balance", "colorSlot", "isDefault", "createdAt", "updatedAt"]
+    },
+    "CloudPocket": {
+      "title": "CloudPocket",
+      "description": "Personal money pocket / target (Kantong) supporting both budget-limit regress and savings-goal progress.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID owning this pocket." },
+        "name": { "type": "string", "description": "Target pocket name such as Makan/Minum." },
+        "mode": { "type": "string", "enum": ["BUDGET_LIMIT", "SAVINGS_GOAL"] },
+        "targetAmount": { "type": "integer", "description": "Max budget or target amount in Rupiah." },
+        "currentAmount": { "type": "integer", "description": "Spent amount (BUDGET_LIMIT) or saved amount (SAVINGS_GOAL) in Rupiah." },
+        "iconKey": { "type": "string", "description": "Icon identifier for pocket visual badge." },
+        "colorSlot": { "type": "integer", "description": "Accent color slot index (0-5)." },
+        "featured": { "type": "boolean", "description": "Whether pocket is highlighted as featured bento card." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "name", "mode", "targetAmount", "currentAmount", "iconKey", "colorSlot", "featured", "createdAt", "updatedAt"]
+    },
+    "CloudTransaction": {
+      "title": "CloudTransaction",
+      "description": "Income or expense record with detailed item purchase note and wallet attribution.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID owning this transaction." },
+        "title": { "type": "string", "description": "Short title for the income or expense." },
+        "note": { "type": "string", "description": "Detailed note describing what was purchased or source of funds." },
+        "amount": { "type": "integer", "description": "Transaction amount in Rupiah." },
+        "type": { "type": "string", "enum": ["INCOME", "EXPENSE"] },
+        "pocketId": { "type": "string", "description": "Linked pocket ID or empty string if uncategorized." },
+        "pocketName": { "type": "string", "description": "Linked pocket display name snapshot." },
+        "walletId": { "type": "string", "description": "Linked wallet ID or empty string." },
+        "walletName": { "type": "string", "description": "Linked wallet display name snapshot." },
+        "locationName": { "type": "string", "description": "Merchant or place name for expense transactions." },
+        "occurredAtMillis": { "type": "integer", "description": "Epoch milliseconds when transaction occurred." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "title", "note", "amount", "type", "pocketId", "pocketName", "occurredAtMillis", "createdAt", "updatedAt"]
+    },
+    "CloudBill": {
+      "title": "CloudBill",
+      "description": "User-scoped debt (Utang) or receivable (Piutang) record with installment tracking.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID owning this bill." },
+        "billType": { "type": "string", "enum": ["UTANG", "PIUTANG"] },
+        "personName": { "type": "string", "description": "Borrower or lender name." },
+        "totalAmount": { "type": "integer", "description": "Total bill amount in base IDR." },
+        "paidAmount": { "type": "integer", "description": "Installment amount already paid in base IDR." },
+        "status": { "type": "string", "enum": ["BELUM_LUNAS", "CICIL", "LUNAS"] },
+        "note": { "type": "string", "description": "Purpose note explaining what the money was used for." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "billType", "personName", "totalAmount", "paidAmount", "status", "note", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserCloudProfile" },
+      "description": "User-scoped cloud profile backup."
+    },
+    "/users/{userId}/wallets/{walletId}": {
+      "schema": { "$ref": "#/entities/CloudWallet" },
+      "description": "User-scoped cloud multi-wallet backup."
+    },
+    "/users/{userId}/pockets/{pocketId}": {
+      "schema": { "$ref": "#/entities/CloudPocket" },
+      "description": "User-scoped cloud pocket targets backup."
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/CloudTransaction" },
+      "description": "User-scoped cloud transactions backup with detailed notes."
+    },
+    "/users/{userId}/bills/{billId}": {
+      "schema": { "$ref": "#/entities/CloudBill" },
+      "description": "User-scoped cloud Utang & Piutang records."
+    }
+  }
+}

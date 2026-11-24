@@ -1,0 +1,206 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default-Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 60 &&
+             data.paydayDay is int && data.paydayDay >= 1 && data.paydayDay <= 31 &&
+             (!('paydayFrequency' in data.keys()) || (data.paydayFrequency is string && data.paydayFrequency in ['DAILY', 'WEEKLY', 'MONTHLY'])) &&
+             (!('paydayWeekday' in data.keys()) || (data.paydayWeekday is int && data.paydayWeekday >= 1 && data.paydayWeekday <= 7)) &&
+             (!('paydayHour' in data.keys()) || (data.paydayHour is int && data.paydayHour >= 0 && data.paydayHour <= 23)) &&
+             (!('paydayMinute' in data.keys()) || (data.paydayMinute is int && data.paydayMinute >= 0 && data.paydayMinute <= 59)) &&
+             (!('currencyCode' in data.keys()) || (data.currencyCode is string && data.currencyCode.size() == 3)) &&
+             (!('languageCode' in data.keys()) || (data.languageCode is string && data.languageCode in ['zh', 'id', 'en', 'ja', 'de', 'ko', 'ru'])) &&
+             (!('hideBalances' in data.keys()) || data.hideBalances is bool) &&
+             data.monthlyBudget is int && data.monthlyBudget >= 0 && data.monthlyBudget <= 100000000000 &&
+             data.themeScheme is string && data.themeScheme in ['BENTO_NEON', 'EMERALD_MINT', 'OCEAN_COBALT', 'SUNSET_ROSE'] &&
+             data.themeMode is string && data.themeMode in ['SYSTEM', 'DARK', 'LIGHT'] &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidWallet(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 50 &&
+             data.walletType is string && data.walletType in ['CASH', 'EWALLET', 'BANK'] &&
+             data.providerCode is string && data.providerCode.size() >= 1 && data.providerCode.size() <= 40 &&
+             data.providerShortName is string && data.providerShortName.size() >= 1 && data.providerShortName.size() <= 60 &&
+             data.providerCompanyName is string && data.providerCompanyName.size() <= 120 &&
+             data.accountNumberHint is string && data.accountNumberHint.size() <= 40 &&
+             data.balance is int && data.balance >= -100000000000 && data.balance <= 100000000000 &&
+             data.colorSlot is int && data.colorSlot >= 0 && data.colorSlot <= 5 &&
+             data.isDefault is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidPocket(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 50 &&
+             data.mode is string && data.mode in ['BUDGET_LIMIT', 'SAVINGS_GOAL'] &&
+             data.targetAmount is int && data.targetAmount > 0 && data.targetAmount <= 100000000000 &&
+             data.currentAmount is int && data.currentAmount >= 0 && data.currentAmount <= 100000000000 &&
+             data.iconKey is string && data.iconKey.size() >= 1 && data.iconKey.size() <= 24 &&
+             data.colorSlot is int && data.colorSlot >= 0 && data.colorSlot <= 5 &&
+             data.featured is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidTransaction(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 80 &&
+             data.note is string && data.note.size() <= 500 &&
+             data.amount is int && data.amount > 0 && data.amount <= 100000000000 &&
+             data.type is string && data.type in ['INCOME', 'EXPENSE'] &&
+             data.pocketId is string && data.pocketId.size() <= 128 &&
+             data.pocketName is string && data.pocketName.size() <= 50 &&
+             (!('walletId' in data.keys()) || (data.walletId is string && data.walletId.size() <= 128)) &&
+             (!('walletName' in data.keys()) || (data.walletName is string && data.walletName.size() <= 50)) &&
+             (!('categoryKey' in data.keys()) || (data.categoryKey is string && data.categoryKey.size() <= 24)) &&
+             (!('categoryLabel' in data.keys()) || (data.categoryLabel is string && data.categoryLabel.size() <= 60)) &&
+             (!('locationName' in data.keys()) || (data.locationName is string && data.locationName.size() <= 100)) &&
+             data.occurredAtMillis is int && data.occurredAtMillis > 0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidBill(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.billType is string && data.billType in ['UTANG', 'PIUTANG'] &&
+             data.personName is string && data.personName.size() >= 1 && data.personName.size() <= 80 &&
+             data.totalAmount is int && data.totalAmount > 0 && data.totalAmount <= 100000000000 &&
+             data.paidAmount is int && data.paidAmount >= 0 && data.paidAmount <= data.totalAmount &&
+             data.status is string && data.status in ['BELUM_LUNAS', 'CICIL', 'LUNAS'] &&
+             data.note is string && data.note.size() <= 400 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll(['userId', 'displayName', 'paydayDay', 'monthlyBudget', 'themeScheme', 'themeMode', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'displayName', 'paydayDay', 'paydayFrequency', 'paydayWeekday', 'paydayHour', 'paydayMinute', 'monthlyBudget', 'themeScheme', 'themeMode', 'currencyCode', 'languageCode', 'hideBalances', 'createdAt', 'updatedAt']) &&
+                       isValidUserProfile(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'paydayDay', 'paydayFrequency', 'paydayWeekday', 'paydayHour', 'paydayMinute', 'monthlyBudget', 'themeScheme', 'themeMode', 'currencyCode', 'languageCode', 'hideBalances', 'updatedAt']);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      match /wallets/{walletId} {
+        allow get: if isOwner(userId) && isValidId(walletId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(walletId) &&
+                         incoming().keys().hasAll(['userId', 'name', 'walletType', 'providerCode', 'providerShortName', 'providerCompanyName', 'accountNumberHint', 'balance', 'colorSlot', 'isDefault', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'name', 'walletType', 'providerCode', 'providerShortName', 'providerCompanyName', 'accountNumberHint', 'balance', 'colorSlot', 'isDefault', 'createdAt', 'updatedAt']) &&
+                         isValidWallet(incoming(), userId);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(walletId) &&
+                         isValidWallet(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'walletType', 'providerCode', 'providerShortName', 'providerCompanyName', 'accountNumberHint', 'balance', 'colorSlot', 'isDefault', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(walletId);
+      }
+
+      match /pockets/{pocketId} {
+        allow get: if isOwner(userId) && isValidId(pocketId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(pocketId) &&
+                         incoming().keys().hasAll(['userId', 'name', 'mode', 'targetAmount', 'currentAmount', 'iconKey', 'colorSlot', 'featured', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'name', 'mode', 'targetAmount', 'currentAmount', 'iconKey', 'colorSlot', 'featured', 'createdAt', 'updatedAt']) &&
+                         isValidPocket(incoming(), userId);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(pocketId) &&
+                         isValidPocket(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'mode', 'targetAmount', 'currentAmount', 'iconKey', 'colorSlot', 'featured', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(pocketId);
+      }
+
+      match /transactions/{transactionId} {
+        allow get: if isOwner(userId) && isValidId(transactionId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(transactionId) &&
+                         incoming().keys().hasAll(['userId', 'title', 'note', 'amount', 'type', 'pocketId', 'pocketName', 'occurredAtMillis', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'title', 'note', 'amount', 'type', 'pocketId', 'pocketName', 'walletId', 'walletName', 'categoryKey', 'categoryLabel', 'locationName', 'occurredAtMillis', 'createdAt', 'updatedAt']) &&
+                         isValidTransaction(incoming(), userId);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(transactionId) &&
+                         isValidTransaction(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'note', 'amount', 'type', 'pocketId', 'pocketName', 'walletId', 'walletName', 'categoryKey', 'categoryLabel', 'locationName', 'occurredAtMillis', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(transactionId);
+      }
+
+      match /bills/{billId} {
+        allow get: if isOwner(userId) && isValidId(billId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(billId) &&
+                         incoming().keys().hasAll(['userId', 'billType', 'personName', 'totalAmount', 'paidAmount', 'status', 'note', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'billType', 'personName', 'totalAmount', 'paidAmount', 'status', 'note', 'createdAt', 'updatedAt']) &&
+                         isValidBill(incoming(), userId);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(billId) &&
+                         isValidBill(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['billType', 'personName', 'totalAmount', 'paidAmount', 'status', 'note', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(billId);
+      }
+    }
+  }
+}
