@@ -10,13 +10,11 @@
 
 [![Kunjungi Website](https://img.shields.io/badge/Kunjungi-realistis.biz.id-89C9B3?style=for-the-badge&labelColor=16191D)](https://realistis.biz.id)
 &nbsp;
-[![Versi APK](https://img.shields.io/badge/KantongKu-v1.4.0-B9AEE0?style=for-the-badge&labelColor=16191D)](https://realistis.biz.id/#unduh)
 
 <br />
 
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-16191D?style=flat-square&labelColor=121417&color=B9AEE0)
 ![Ukuran APK](https://img.shields.io/badge/Ukuran-~34_MB-16191D?style=flat-square&labelColor=121417&color=89C9B3)
-![Runtime](https://img.shields.io/badge/Node.js-24%2B-16191D?style=flat-square&labelColor=121417&color=B9AEE0)
 
 </div>
 
