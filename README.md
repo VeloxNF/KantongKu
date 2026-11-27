@@ -30,7 +30,6 @@
 
 | Beranda & Dompet | Kantong Anggaran | Grafik & Siklus Gajian |
 | :---: | :---: | :---: |
-| <img src="public/assets/aistudio/IMG_20261127_081444_fa4b6855.jpg" alt="Beranda KantongKu" width="210" /> | <img src="public/assets/aistudio/IMG_20261127_081523_2ecedca4.jpg" alt="Kantong Anggaran KantongKu" width="210" /> | <img src="public/assets/aistudio/IMG_20261127_081611_1e8d12d4.jpg" alt="Grafik Siklus Gajian KantongKu" width="210" /> |
 
 </div>
 
@@ -42,19 +41,6 @@
 - **Input Cepat & Scan Struk** — Tombol nominal instan (`+Rp10K` – `+Rp100K`) maupun baca otomatis dari foto struk.
 - **Kantong & Siklus Gajian** — Batas belanja per kategori, target tabungan, serta jadwal gajian fleksibel.
 - **Offline-First & Sinkron Cloud** — Tetap jalan tanpa internet dan tersinkron otomatis ke akun Google.
-
----
-
-## Menjalankan Web Secara Lokal
-
-Proyek situs web berjalan menggunakan **Node.js (ESM)** murni tanpa bundler.
-
-```bash
-npm install
-npm start
-```
-
-Buka `http://localhost:3000` di peramban setelah server aktif.
 
 ---
 
